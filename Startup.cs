@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Play.Catalog.Entities;
 using Play.Catalog.Settings;
+using Play.Common.Identity;
 using Play.Common.MassTransit;
 using Play.Common.MongoDb;
 using Play.Common.Settings;
@@ -37,12 +38,7 @@ namespace Play.Catalog
                 .AddRepository<Item>("items")
                 .AddMassTransitWithRabbitMQ();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.Authority = "https://localhost:5003";
-                    options.Audience = _serviceSettings.ServiceName;
-                });
+            services.AddJwtBearerAuthentication();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
