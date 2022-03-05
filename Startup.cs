@@ -1,5 +1,6 @@
 using MassTransit;
 using MassTransit.Definition;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +37,13 @@ namespace Play.Catalog
                 .AddRepository<Item>("items")
                 .AddMassTransitWithRabbitMQ();
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = "https://localhost:5003";
+                    options.Audience = _serviceSettings.ServiceName;
+                });
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -63,6 +71,8 @@ namespace Play.Catalog
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

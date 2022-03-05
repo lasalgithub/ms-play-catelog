@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Play.Catalog.Contracts;
@@ -14,6 +15,7 @@ namespace Play.Catalog.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class CatalogController : ControllerBase
     {
         private readonly IRepository<Item> _itemRepository;
