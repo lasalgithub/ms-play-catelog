@@ -56,7 +56,7 @@ namespace Play.Catalog.Controllers
             };
             await _itemRepository.CreateAsync(entity);
 
-            await _publishEndpoint.Publish(new CatalogItemCreated(entity.Id, entity.Name, entity.Description));
+            await _publishEndpoint.Publish(new CatalogItemCreated(entity.Id, entity.Name, entity.Description, entity.Price));
         }
 
         [HttpPut]
@@ -72,7 +72,7 @@ namespace Play.Catalog.Controllers
 
             await _itemRepository.UpdateAsync(entity);
 
-            await _publishEndpoint.Publish(new CatalogItemUpdated(entity.Id, entity.Name, entity.Description));
+            await _publishEndpoint.Publish(new CatalogItemUpdated(entity.Id, entity.Name, entity.Description, entity.Price));
         }
 
         [HttpDelete("{id}")]

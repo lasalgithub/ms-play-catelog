@@ -6,12 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="Play.Common" Version="1.8.0" />
-    <PackageReference Include="Play.Catalog.Contracts" Version="1.3.0" />
+    <PackageReference Include="Play.Catalog.Contracts" Version="1.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Play.Catalog.Contracts\Play.Catalog.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
