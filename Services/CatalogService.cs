@@ -47,7 +47,7 @@ namespace Play.Catalog.Services
                 Id = Guid.NewGuid(),
                 Name = createRequest.Name,
                 Description = createRequest.Description,
-                Price = createRequest.Price,
+                Price = createRequest.Price ?? 0,
                 CreatedDate = DateTimeOffset.Now
             };
             await _itemRepository.CreateAsync(entity);
@@ -69,7 +69,7 @@ namespace Play.Catalog.Services
                 Id = updateRequest.Id,
                 Name = updateRequest.Name,
                 Description = updateRequest.Description,
-                Price = updateRequest.Price
+                Price = updateRequest.Price ?? 0
             };
 
             await _itemRepository.UpdateAsync(entity);

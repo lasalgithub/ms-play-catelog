@@ -54,7 +54,6 @@ namespace Play.Catalog.Controllers
         [HttpPut]
         public async Task<ActionResult> Update(UpdateItemDto updateRequest)
         {
-
             var response = await _catalogService.UpdateItem(updateRequest);
             if (response == null)
                 return NotFound($"Item not found with id: '{updateRequest.Id}'");
