@@ -13,8 +13,8 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0-focal AS build
 WORKDIR /src
 COPY ["Play.Catalog.csproj", "./"]
 
-# RUN  --mount=type=secret,id=GH_OWNER,dst=/GH_OWNER --mount=type=secret,id=GH_PAT,dst=/GH_PAT  \ 
-RUN dotnet nuget add source --username USERNAME --password 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 --store-password-in-clear-text --name github "https://nuget.pkg.github.com/playhuborg/index.json"
+RUN  --mount=type=secret,id=GH_OWNER,dst=/GH_OWNER --mount=type=secret,id=GH_PAT,dst=/GH_PAT  \ 
+    dotnet nuget add source --username USERNAME --password `cat /GH_PAT` --store-password-in-clear-text --name github "https://nuget.pkg.github.com/`cat /GH_OWNER`/index.json"
 
 RUN dotnet restore "Play.Catalog.csproj"
 COPY . .
