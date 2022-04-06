@@ -34,9 +34,9 @@ namespace Play.Catalog
         {
             _serviceSettings = Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
 
-            services.AddMongo()
-                .AddRepository<Item>("items")
-                .AddMassTransitWithRabbitMQ();
+            services.RegisterRepositories()
+                    .RegisterServices()
+                    .AddMassTransitWithRabbitMQ();
 
             services.AddJwtBearerAuthentication();
 

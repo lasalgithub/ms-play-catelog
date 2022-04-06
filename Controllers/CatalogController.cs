@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Play.Catalog.Contracts;
 using Play.Catalog.Dtos;
 using Play.Catalog.Entities;
+using Play.Catalog.Services;
 using Play.Common;
 
 namespace Play.Catalog.Controllers
@@ -19,68 +20,54 @@ namespace Play.Catalog.Controllers
     public class CatalogController : ControllerBase
     {
         private const string AdminRole = "Admin";
-        private readonly IRepository<Item> _itemRepository;
         private readonly ILogger<CatalogController> _logger;
-        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly ICatalogService _catalogService;
 
-        public CatalogController(ILogger<CatalogController> logger, IRepository<Item> itemRepository,
-         IPublishEndpoint publishEndpoint)
+        public CatalogController(ILogger<CatalogController> logger, ICatalogService catalogService)
         {
             _logger = logger;
-            _itemRepository = itemRepository;
-            _publishEndpoint = publishEndpoint;
+            _catalogService = catalogService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemDto>>> GetAll()
         {
-            return Ok((await _itemRepository.GetAllAsync()).Select(x => x.AsDto()));
+            return Ok(await _catalogService.GetAllItems());
         }
 
         [HttpGet("{id}")]
-        public async Task<ItemDto> GetById(Guid id)
+        public async Task<ActionResult<ItemDto>> GetById(Guid id)
         {
-            return (await _itemRepository.GetAsync(id)).AsDto();
+            var item = await _catalogService.GetItemById(id);
+            if (item == null)
+                return NotFound($"Item not found with id: '{id}'");
+            return Ok(item);
         }
 
         [HttpPost]
-        public async Task Create(CreateItemDto createRequest)
+        public async Task<ActionResult<ItemDto>> Create(CreateItemDto createRequest)
         {
-            var entity = new Item
-            {
-                Id = Guid.NewGuid(),
-                Name = createRequest.Name,
-                Description = createRequest.Description,
-                Price = createRequest.Price,
-                CreatedDate = DateTimeOffset.Now
-            };
-            await _itemRepository.CreateAsync(entity);
-
-            await _publishEndpoint.Publish(new CatalogItemCreated(entity.Id, entity.Name, entity.Description, entity.Price));
+            var response = await _catalogService.CreateItem(createRequest);
+            return Ok(response);
         }
 
         [HttpPut]
-        public async Task Update(UpdateItemDto updateRequest)
+        public async Task<ActionResult> Update(UpdateItemDto updateRequest)
         {
-            var entity = new Item
-            {
-                Id = updateRequest.Id,
-                Name = updateRequest.Name,
-                Description = updateRequest.Description,
-                Price = updateRequest.Price
-            };
 
-            await _itemRepository.UpdateAsync(entity);
-
-            await _publishEndpoint.Publish(new CatalogItemUpdated(entity.Id, entity.Name, entity.Description, entity.Price));
+            var response = await _catalogService.UpdateItem(updateRequest);
+            if (response == null)
+                return NotFound($"Item not found with id: '{updateRequest.Id}'");
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
-        public async Task Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
-            await _itemRepository.RemoveAsync(id);
-
-            await _publishEndpoint.Publish(new CatalogItemDeleted(id));
+            var response = await _catalogService.DeleteItem(id);
+            if (response == null)
+                return NotFound($"Item not found with id: '{id}'");
+            return Ok(response);
         }
     }
 }
